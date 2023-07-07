@@ -1,0 +1,726 @@
+package Portfolio;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+public class crawling {
+
+   public static WebDriver driver;
+   public static String base_url = "http://www.gbus.or.kr/2006/program/board/report_lst.php?inja=etc&sm=5_1";
+   public static final String WEB_DRIVER_ID = "webdriver.chrome.driver";
+   public static final String WEB_DRIVER_PATH = "C:\\download\\chromedriver.exe";
+   
+   //경기도 버스운송사헙조합 조합원 가입 현황 참고(시내버스 기준)
+   //경기버스정보 시내버스 지역별 인허가 노선 참고(시내버스 기준)
+   //가평군1
+   public static String gp = "가평교통"; //68 
+   public static int cnt1 = 0; //총 노선 68개
+   //고양시2
+   public static String gy1 = "고양교통(주)"; //6 
+   public static String gy2 = "명성"; //19 
+   public static String gy3 = "서울여객(주)"; //11 
+   public static String gy4 = "(주)가온누리엠"; //3 
+   public static int cnt2 = 0; //총 노선 39개
+   //과천시3
+   public static String gc = "과천여객"; //4
+   public static int cnt3 = 0; //총 노선 4개
+   //광명시4
+   public static String gm = "화영운수(주)"; //18 
+   public static int cnt4 = 0; //총 노선 18개
+   //광주시5
+   public static String gj1 = "(주)경기고속"; //54 
+   public static String gj2 = "(주)대원고속"; //58 
+   public static int cnt5 = 0; //총 노선 112개
+   //구리시6
+   public static String gr = "(주)경기여객"; //15 
+   public static int cnt6 = 0; //총 노선 15개
+   //군포시7
+   public static String gp1 = "(주)군포여객"; //1 
+   public static String gp2 = "산본여객"; //3 
+   public static int cnt7 = 0; //총 노선 4개
+   //김포시8
+   public static String gip1 = "선진상운(주)"; //9 
+   public static String gip2 = "선진버스(주)"; //27 
+   public static String gip3 = "김포운수(주)"; //20 
+   public static int cnt8 = 0; //총 노선 56개
+   //남양주시9
+   public static String ny1 = "(주)대원운수"; //68 
+   public static String ny2 = "(주)경기버스"; //15 
+   public static String ny3 = "(주)경기운수"; //14 
+   public static int cnt9 = 0; //총 노선 97개
+   //동두천시10
+   public static String ddc = "대양운수(주)"; //66 
+   public static int cnt10 = 0; //총 노선 66개
+   //부천시11
+   public static String bc1 = "소신여객(주)"; //22 
+   public static String bc2 = "부일교통(주)"; //10 
+   public static String bc3 = "(주)청우운수"; //7 
+   public static String bc4 =  "부천버스(주)"; //4 
+   public static String bc5 =  "성광운수(유)"; //6 
+   public static String bc6 =  "(주)도원교통"; //3 
+   public static int cnt11 = 0; //총 노선 52개
+   //성남시12
+   public static String sn1 = "성남시내(주)"; //30 
+   public static String sn2 = "(주)대원버스"; //29 
+   public static String sn3 = "대명운수(주)"; //6 
+   public static int cnt12 = 0; //총 노선 65개
+   //수원시13
+   public static String sw1 = "수원여객(주)"; //40 
+   public static String sw2 = "용남고속(주)"; //41 
+   public static String sw3 = "성우운수(주)"; //6 
+   public static String sw4 = "경진여객(주)"; //60 
+   public static String sw5 = "남양여객(주)"; //11 
+   public static String sw6 = "(주)용남고속버스라인"; //11 
+   public static String sw7 = "삼경운수(주)"; //2 
+   public static int cnt13 = 0; //총 노선 160개
+   //시흥시14
+   public static String sh = "(주)시흥교통"; //33 
+   public static int cnt14 = 0; //총 노선 33개
+   //안산시15
+   public static String as1 = "경원여객(주)"; //13 
+   public static String as2 = "태화상운(주)"; //13 
+   public static String as3 = "(주)써클라인"; //3 
+   public static String as4 = "선진고속(주)"; //3
+   public static int cnt15 = 0; //총 노선 29개
+   //안성시16
+   public static String asun = "백성운수(주)"; //78 
+   public static int cnt16 = 0; //총 노선 78개
+   //안양시17
+   public static String ay1 = "삼영운수(주)"; //24 
+   public static String ay2 = "보영운수(주)"; //13 
+   public static int cnt17 = 0; //총 노선 37개
+   //양주시18
+   public static String yj1 = "(주)양주교통"; //17 
+   public static String yj2 = "(주)진명여객"; //12 
+   public static int cnt18 = 0; //총 노선 29개
+   //양평군19
+   public static String yp = "(주)금강고속"; //135 
+   public static int cnt19 = 0; //총 노선 135개
+   //여주시(조합원가입x)
+   //연천군20
+   public static String yc1 = "(주)연천교통"; //28 
+   public static String yc2 = "대양운수(주)"; //56 
+   public static int cnt20 = 0; //총 노선 84개
+   //오산시21
+   public static String os = "(주)오산교통"; //24 
+   public static int cnt21 = 0; //총 노선 24개
+   //용인시22
+   public static String yi = "(합)경남여객"; //110 
+   public static int cnt22 = 0; //총 노선 110개
+   //의왕시23
+   public static String uw1 = "의왕교통(주)"; //1 
+   public static String uw2 = "학의운수"; //2
+   public static int cnt23 = 0; //총 노선 3개
+   //의정부시24
+   public static String uj1 = "(합)명진여객"; //12 
+   public static String uj2 = "(주)평안운수"; //20 
+   public static int cnt24 = 0; //총 노선 32개
+   //이천시25
+   public static String ic1 = "(주)이천시내버스"; //1 
+   public static String ic2 = "(주)경기고속"; //54 
+   public static String ic3 = "(주)대원고속"; //58 
+   public static int cnt25 = 0; //총 노선 113개
+   //파주시26
+   public static String pj1 = "신성여객(주)"; //5 
+   public static String pj2 = "(합)신일여객"; //19 
+   public static String pj3 = "신성교통(주)"; //20 
+   public static int cnt26 = 0; //총 노선 44개
+   //평택시27
+   public static String pt1 = "서울고속(주)"; //35 
+   public static String pt2 = "평택여객(주)"; //50 
+   public static String pt3 = "협진여객(주)"; //28 
+   public static int cnt27 = 0; //총 노선 113개
+   //포천시28
+   public static String pc1 = "선진시내(주)"; //25 
+   public static String pc2 = "(주)포천교통"; //7 
+   public static String pc3 = "포천상운(주)"; //21 
+   public static int cnt28 = 0; //총 노선 113개
+   //하남시29
+   public static String hn = "(주)경기상운"; //19 
+   public static int cnt29 = 0; //총 노선 19개
+   //화성시30
+   public static String hs1 = "제부여객(주)"; //14 
+   public static String hs2 = "(주)화성운수"; //20 
+   public static String hs3 = "(주)화성여객"; //29 
+   public static String hs4 =  "화성도시공사"; //11 
+   public static int cnt30 = 0; //총 노선 84개
+   
+   
+   
+   public static void main(String[] args) throws ClassNotFoundException {
+      System.setProperty(WEB_DRIVER_ID, WEB_DRIVER_PATH);
+      driver = new ChromeDriver();
+      List<List<? extends Number>> resultList = crawl();
+      List<? extends Number> countlist = resultList.get(0);
+      List<? extends Number> ratelist = resultList.get(1);
+      
+      // DB 연결
+      try {
+         Class.forName("com.mysql.cj.jdbc.Driver");
+         Connection conn = DriverManager.getConnection("jdbc:mysql://192.168.23.108:33060/kopo39", "root", "kopo39");
+         Statement stmt = conn.createStatement();
+
+         int num = 1;
+         for (int i = 0; i < countlist.size(); i++) {
+             Number c = countlist.get(i);
+             Number r = ratelist.get(i);
+             
+             if (num == 1) {
+                 String query = "insert into gyeonggibus (id, name, lineNumber, count, rate) values "
+                         + "(" + num + ", '" + "가평군"+ "', " + 68 + ", " + c + ", " + r + ");";
+                 stmt.execute(query);
+             } else if (num == 2) {
+                 String query = "insert into gyeonggibus (id, name, lineNumber, count, rate) values "
+                         + "(" + num + ", '" + "고양시"+ "', " + 39 + ", " + c + ", " + r + ");";
+                 stmt.execute(query);
+             } else if (num == 3) {
+                 String query = "insert into gyeonggibus (id, name, lineNumber, count, rate) values "
+                         + "(" + num + ", '" + "과천시"+ "', " + 4 + ", " + c + ", " + r + ");";
+                 stmt.execute(query);
+             } else if (num == 4) {
+                 String query = "insert into gyeonggibus (id, name, lineNumber, count, rate) values "
+                         + "(" + num + ", '" + "광명시"+ "', " + 4 + ", " + c + ", " + r + ");";
+                 stmt.execute(query);
+             } else if (num == 5) {
+                 String query = "insert into gyeonggibus (id, name, lineNumber, count, rate) values "
+                         + "(" + num + ", '" + "광주시"+ "', " + 112 + ", " + c + ", " + r + ");";
+                 stmt.execute(query);
+             } else if (num == 6) {
+                 String query = "insert into gyeonggibus (id, name, lineNumber, count, rate) values "
+                         + "(" + num + ", '" + "구리시"+ "', " + 15 + ", " + c + ", " + r + ");";
+                 stmt.execute(query);
+             } else if (num == 7) {
+                 String query = "insert into gyeonggibus (id, name, lineNumber, count, rate) values "
+                         + "(" + num + ", '" + "군포시"+ "', " + 4 + ", " + c + ", " + r + ");";
+                 stmt.execute(query);
+             } else if (num == 8) {
+                 String query = "insert into gyeonggibus (id, name, lineNumber, count, rate) values "
+                         + "(" + num + ", '" + "김포시"+ "', " + 56 + ", " + c + ", " + r + ");";
+                 stmt.execute(query);
+             } else if (num == 9) {
+                 String query = "insert into gyeonggibus (id, name, lineNumber, count, rate) values "
+                         + "(" + num + ", '" + "남양주시"+ "', " + 97 + ", " + c + ", " + r + ");";
+                 stmt.execute(query);
+             } else if (num == 10) {
+                 String query = "insert into gyeonggibus (id, name, lineNumber, count, rate) values "
+                         + "(" + num + ", '" + "동두천시"+ "', " + 66 + ", " + c + ", " + r + ");";
+                 stmt.execute(query);
+             } else if (num == 11) {
+                 String query = "insert into gyeonggibus (id, name, lineNumber, count, rate) values "
+                         + "(" + num + ", '" + "부천시"+ "', " + 52 + ", " + c + ", " + r + ");";
+                 stmt.execute(query);
+             } else if (num == 12) {
+                 String query = "insert into gyeonggibus (id, name, lineNumber, count, rate) values "
+                         + "(" + num + ", '" + "성남시"+ "', " + 65 + ", " + c + ", " + r + ");";
+                 stmt.execute(query);
+             } else if (num == 13) {
+                 String query = "insert into gyeonggibus (id, name, lineNumber, count, rate) values "
+                         + "(" + num + ", '" + "수원시"+ "', " + 160 + ", " + c + ", " + r + ");";
+                 stmt.execute(query);
+             } else if (num == 14) {
+                 String query = "insert into gyeonggibus (id, name, lineNumber, count, rate) values "
+                         + "(" + num + ", '" + "시흥시"+ "', " + 33 + ", " + c + ", " + r + ");";
+                 stmt.execute(query);
+             } else if (num == 15) {
+                 String query = "insert into gyeonggibus (id, name, lineNumber, count, rate) values "
+                         + "(" + num + ", '" + "안산시"+ "', " + 29 + ", " + c + ", " + r + ");";
+                 stmt.execute(query);
+             } else if (num == 16) {
+                 String query = "insert into gyeonggibus (id, name, lineNumber, count, rate) values "
+                         + "(" + num + ", '" + "안성시"+ "', " + 78 + ", " + c + ", " + r + ");";
+                 stmt.execute(query);
+             } else if (num == 17) {
+                 String query = "insert into gyeonggibus (id, name, lineNumber, count, rate) values "
+                         + "(" + num + ", '" + "안양시"+ "', " + 37 + ", " + c + ", " + r + ");";
+                 stmt.execute(query);
+             } else if (num == 18) {
+                 String query = "insert into gyeonggibus (id, name, lineNumber, count, rate) values "
+                         + "(" + num + ", '" + "양주시"+ "', " + 29 + ", " + c + ", " + r + ");";
+                 stmt.execute(query);
+             } else if (num == 19) {
+                 String query = "insert into gyeonggibus (id, name, lineNumber, count, rate) values "
+                         + "(" + num + ", '" + "양평군"+ "', " + 135 + ", " + c + ", " + r + ");";
+                 stmt.execute(query);
+             } else if (num == 20) {
+                 String query = "insert into gyeonggibus (id, name, lineNumber, count, rate) values "
+                         + "(" + num + ", '" + "연천군"+ "', " + 84 + ", " + c + ", " + r + ");";
+                 stmt.execute(query);
+             } else if (num == 21) {
+                 String query = "insert into gyeonggibus (id, name, lineNumber, count, rate) values "
+                         + "(" + num + ", '" + "오산시"+ "', " + 24 + ", " + c + ", " + r + ");";
+                 stmt.execute(query);
+             } else if (num == 22) {
+                 String query = "insert into gyeonggibus (id, name, lineNumber, count, rate) values "
+                         + "(" + num + ", '" + "용인시"+ "', " + 110 + ", " + c + ", " + r + ");";
+                 stmt.execute(query);
+             } else if (num == 23) {
+                 String query = "insert into gyeonggibus (id, name, lineNumber, count, rate) values "
+                         + "(" + num + ", '" + "의왕시"+ "', " + 3 + ", " + c + ", " + r + ");";
+                 stmt.execute(query);
+             } else if (num == 24) {
+                 String query = "insert into gyeonggibus (id, name, lineNumber, count, rate) values "
+                         + "(" + num + ", '" + "의정부시"+ "', " + 32 + ", " + c + ", " + r + ");";
+                 stmt.execute(query);
+             } else if (num == 25) {
+                 String query = "insert into gyeonggibus (id, name, lineNumber, count, rate) values "
+                         + "(" + num + ", '" + "이천시"+ "', " + 113 + ", " + c + ", " + r + ");";
+                 stmt.execute(query);
+             } else if (num == 26) {
+                 String query = "insert into gyeonggibus (id, name, lineNumber, count, rate) values "
+                         + "(" + num + ", '" + "파주시"+ "', " + 44 + ", " + c + ", " + r + ");";
+                 stmt.execute(query);
+             } else if (num == 27) {
+                 String query = "insert into gyeonggibus (id, name, lineNumber, count, rate) values "
+                         + "(" + num + ", '" + "평택시"+ "', " + 113 + ", " + c + ", " + r + ");";
+                 stmt.execute(query);
+             } else if (num == 28) {
+                 String query = "insert into gyeonggibus (id, name, lineNumber, count, rate) values "
+                         + "(" + num + ", '" + "포천시"+ "', " + 113 + ", " + c + ", " + r + ");";
+                 stmt.execute(query);
+             } else if (num == 29) {
+                 String query = "insert into gyeonggibus (id, name, lineNumber, count, rate) values "
+                         + "(" + num + ", '" + "하남시"+ "', " + 19 + ", " + c + ", " + r + ");";
+                 stmt.execute(query);
+             } else if (num == 30) {
+                 String query = "insert into gyeonggibus (id, name, lineNumber, count, rate) values "
+                         + "(" + num + ", '" + "화성시"+ "', " + 84 + ", " + c + ", " + r + ");";
+                 stmt.execute(query);
+             }
+             
+             num++;
+         }
+
+         stmt.close(); // statement 객체 열어줬으면 닫기
+         conn.close(); // connection 객체 열어줬으면 닫기
+         
+         driver.close();
+
+      } catch (SQLException e) { // throw SQLException 예외처리 대신 try-catch 사용해서 에러 위치 정확하게 찾아서 해결하기
+         e.printStackTrace();
+      }
+
+   }
+
+   
+   
+   public static List<List<? extends Number>> crawl() {
+      List<List<? extends Number>> resultList = new ArrayList<>();
+      List<Integer> countlist = new ArrayList<>();
+      List<Double> ratelist = new ArrayList<>();
+      try {
+         driver.get(base_url);
+         Thread.sleep(1000);
+         
+         for(int c = 0; c < 2; c++) {
+            if(c == 0) {
+            // 불친절 관련 카테고리
+            WebElement category1 = driver.findElement(By.xpath(
+                  "/html/body/div/div/div[1]/table/tbody/tr/td[1]/table/tbody/tr[2]/td/table/tbody/tr[5]/td/a/img"));
+            category1.click();
+            Thread.sleep(1000);
+            } else if(c == 1) {
+            // 난폭운전 관련 카테고리
+            WebElement category2 = driver.findElement(By.xpath(
+                  "/html/body/div/div/div[1]/table/tbody/tr/td[1]/table/tbody/tr[2]/td/table/tbody/tr[6]/td/a/img"));
+            category2.click();
+            Thread.sleep(1000);
+            }
+               //LocalDate currentDate = LocalDate.now();
+               DateTimeFormatter dateformat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+               //String today = currentDate.format(dateformat);
+      
+               String company = "";
+               String date = "";
+               //String deadline = "2023-05-31";
+               String deadlineString = "2023-05-31";
+               LocalDate deadline = LocalDate.parse(deadlineString, dateformat);
+               WebElement pageclick;
+               WebElement nextblock;
+      
+               // 전체 데이터 DB에 넣기
+               // 1block
+               // page1
+               for (int i = 1; i <= 19; i += 2) {
+                  company = driver
+                        .findElement(By
+                              .xpath("/html/body/div/div/div[1]/table/tbody/tr/td[3]/table[2]/tbody/tr/td/table/tbody"
+                                    + "/tr[2]/td/table/tbody/tr/td/form/table/tbody/tr[" + i + "]/td[3]"))
+                        .getText();
+      
+                  if (company.equals(gp)) {
+                     cnt1++;
+                  } else if (company.equals(gy1) || company.equals(gy2) || company.equals(gy3) || company.equals(gy4)) {
+                     cnt2++;
+                  } else if (company.equals(gc)) {
+                     cnt3++;
+                  } else if (company.equals(gm)) {
+                     cnt4++;
+                  } else if (company.equals(gj1) || company.equals(gj2)) {
+                     cnt5++;
+                  } else if (company.equals(gr)) {
+                     cnt6++;
+                  } else if (company.equals(gp1) || company.equals(gp2)) {
+                     cnt7++;
+                  } else if (company.equals(gip1) || company.equals(gip2) || company.equals(gip3)) {
+                     cnt8++;
+                  } else if (company.equals(ny1) || company.equals(ny2) || company.equals(ny3)) {
+                     cnt9++;
+                  } else if (company.equals(ddc)) {
+                     cnt10++;
+                  } else if (company.equals(bc1) || company.equals(bc2) || company.equals(bc3) || company.equals(bc4) || company.equals(bc5) || company.equals(bc6)) {
+                     cnt11++;
+                  } else if (company.equals(sn1) || company.equals(sn2) || company.equals(sn3)) {
+                     cnt12++;
+                  } else if (company.equals(sw1) || company.equals(sw2) || company.equals(sw3) || company.equals(sw4) || company.equals(sw5) || company.equals(sw6) || company.equals(sw7)) {
+                     cnt13++;
+                  } else if (company.equals(sh)) {
+                     cnt14++;
+                  } else if (company.equals(as1) || company.equals(as2) || company.equals(as3) || company.equals(as4)) {
+                     cnt15++;
+                  } else if (company.equals(asun)) {
+                     cnt16++;
+                  } else if (company.equals(ay1) || company.equals(ay2)) {
+                     cnt17++;
+                  } else if (company.equals(yj1) || company.equals(yj2)) {
+                     cnt18++;
+                  } else if (company.equals(yp)) {
+                     cnt19++;
+                  } else if (company.equals(yc1) || company.equals(yc2)) {
+                     cnt20++;
+                  } else if (company.equals(os)) {
+                     cnt21++;
+                  } else if (company.equals(yi)) {
+                     cnt22++;
+                  } else if (company.equals(uw1) || company.equals(uw2)) {
+                     cnt23++;
+                  } else if (company.equals(uj1) || company.equals(uj2)) {
+                     cnt24++;
+                  } else if (company.equals(ic1) || company.equals(ic2) || company.equals(ic3)) {
+                     cnt25++;
+                  } else if (company.equals(pj1) || company.equals(pj2) || company.equals(pj3)) {
+                     cnt26++;
+                  } else if (company.equals(pt1) || company.equals(pt2) || company.equals(pt3)) {
+                     cnt27++;
+                  } else if (company.equals(pc1) || company.equals(pc2) || company.equals(pc3)) {
+                     cnt28++;
+                  } else if (company.equals(hn)) {
+                     cnt29++;
+                  } else if (company.equals(hs1) || company.equals(hs2) || company.equals(hs3) || company.equals(hs4)) {
+                     cnt30++;
+                  }
+      
+               }
+      
+               // page2~10
+               int pr = 1; // 페이지 반복 카운트
+               for (pr = 1; pr <= 9; pr++) {
+                  pageclick = driver.findElement(By.xpath(
+                        "/html/body/div/div/div[1]/table/tbody/tr/td[3]/table[2]/tbody/tr/td/table/tbody/tr[2]/td"
+                              + "/table/tbody/tr/td/form/table/tbody/tr[21]/td/table/tbody/tr/td/a[" + pr
+                              + "]/font"));
+                  pageclick.click();
+                  Thread.sleep(1000);
+      
+                  // 행 출력
+                  for (int i = 1; i <= 19; i += 2) {
+                     company = driver
+                           .findElement(By.xpath(
+                                 "/html/body/div/div/div[1]/table/tbody/tr/td[3]/table[2]/tbody/tr/td/table/tbody"
+                                       + "/tr[2]/td/table/tbody/tr/td/form/table/tbody/tr[" + i + "]/td[3]"))
+                           .getText();
+      
+                     if (company.equals(gp)) {
+                        cnt1++;
+                     } else if (company.equals(gy1) || company.equals(gy2) || company.equals(gy3) || company.equals(gy4)) {
+                        cnt2++;
+                     } else if (company.equals(gc)) {
+                        cnt3++;
+                     } else if (company.equals(gm)) {
+                        cnt4++;
+                     } else if (company.equals(gj1) || company.equals(gj2)) {
+                        cnt5++;
+                     } else if (company.equals(gr)) {
+                        cnt6++;
+                     } else if (company.equals(gp1) || company.equals(gp2)) {
+                        cnt7++;
+                     } else if (company.equals(gip1) || company.equals(gip2) || company.equals(gip3)) {
+                        cnt8++;
+                     } else if (company.equals(ny1) || company.equals(ny2) || company.equals(ny3)) {
+                        cnt9++;
+                     } else if (company.equals(ddc)) {
+                        cnt10++;
+                     } else if (company.equals(bc1) || company.equals(bc2) || company.equals(bc3) || company.equals(bc4) || company.equals(bc5) || company.equals(bc6)) {
+                        cnt11++;
+                     } else if (company.equals(sn1) || company.equals(sn2) || company.equals(sn3)) {
+                        cnt12++;
+                     } else if (company.equals(sw1) || company.equals(sw2) || company.equals(sw3) || company.equals(sw4) || company.equals(sw5) || company.equals(sw6) || company.equals(sw7)) {
+                        cnt13++;
+                     } else if (company.equals(sh)) {
+                        cnt14++;
+                     } else if (company.equals(as1) || company.equals(as2) || company.equals(as3) || company.equals(as4)) {
+                        cnt15++;
+                     } else if (company.equals(asun)) {
+                        cnt16++;
+                     } else if (company.equals(ay1) || company.equals(ay2)) {
+                        cnt17++;
+                     } else if (company.equals(yj1) || company.equals(yj2)) {
+                        cnt18++;
+                     } else if (company.equals(yp)) {
+                        cnt19++;
+                     } else if (company.equals(yc1) || company.equals(yc2)) {
+                        cnt20++;
+                     } else if (company.equals(os)) {
+                        cnt21++;
+                     } else if (company.equals(yi)) {
+                        cnt22++;
+                     } else if (company.equals(uw1) || company.equals(uw2)) {
+                        cnt23++;
+                     } else if (company.equals(uj1) || company.equals(uj2)) {
+                        cnt24++;
+                     } else if (company.equals(ic1) || company.equals(ic2) || company.equals(ic3)) {
+                        cnt25++;
+                     } else if (company.equals(pj1) || company.equals(pj2) || company.equals(pj3)) {
+                        cnt26++;
+                     } else if (company.equals(pt1) || company.equals(pt2) || company.equals(pt3)) {
+                        cnt27++;
+                     } else if (company.equals(pc1) || company.equals(pc2) || company.equals(pc3)) {
+                        cnt28++;
+                     } else if (company.equals(hn)) {
+                        cnt29++;
+                     } else if (company.equals(hs1) || company.equals(hs2) || company.equals(hs3) || company.equals(hs4)) {
+                        cnt30++;
+                     }
+      
+                  }
+               }
+      
+               nextblock = driver.findElement(
+                     By.xpath("/html/body/div/div/div[1]/table/tbody/tr/td[3]/table[2]/tbody/tr/td/table/tbody/tr[2]/td"
+                           + "/table/tbody/tr/td/form/table/tbody/tr[21]/td/table/tbody/tr/td/a[10]"));
+               nextblock.click();
+               Thread.sleep(2000);
+      
+               // 전체 데이터 DB에 넣기
+               // 2block부터
+               boolean shouldBreak = false;
+      
+               while (true) {
+                   pr = 3; // 초기화
+      
+                   for (pr = 3; pr <= 11; pr++) {
+                       pageclick = driver.findElement(By.xpath(
+                               "/html/body/div/div/div[1]/table/tbody/tr/td[3]/table[2]/tbody/tr/td/table/tbody/tr[2]/td"
+                                       + "/table/tbody/tr/td/form/table/tbody/tr[21]/td/table/tbody/tr/td/a[" + pr
+                                       + "]/font"));
+                       pageclick.click();
+                       Thread.sleep(1000);
+      
+                       // 담당회사 적혀있는 레코드만 추출하여 카운트 세기
+                       for (int i = 1; i <= 19; i += 2) {
+                           date = driver.findElement(By
+                                   .xpath("/html/body/div/div/div[1]/table/tbody/tr/td[3]/table[2]/tbody/tr/td/table/tbody"
+                                           + "/tr[2]/td/table/tbody/tr/td/form/table/tbody/tr[" + i + "]/td[5]"))
+                                   .getText();
+                           LocalDate currentdate = LocalDate.parse(date, dateformat);
+                           company = driver.findElement(By
+                                   .xpath("/html/body/div/div/div[1]/table/tbody/tr/td[3]/table[2]/tbody/tr/td/table/tbody"
+                                           + "/tr[2]/td/table/tbody/tr/td/form/table/tbody/tr[" + i + "]/td[3]"))
+                                   .getText();
+      
+                           if (company.equals(gp)) {
+                           cnt1++;
+                        } else if (company.equals(gy1) || company.equals(gy2) || company.equals(gy3) || company.equals(gy4)) {
+                           cnt2++;
+                        } else if (company.equals(gc)) {
+                           cnt3++;
+                        } else if (company.equals(gm)) {
+                           cnt4++;
+                        } else if (company.equals(gj1) || company.equals(gj2)) {
+                           cnt5++;
+                        } else if (company.equals(gr)) {
+                           cnt6++;
+                        } else if (company.equals(gp1) || company.equals(gp2)) {
+                           cnt7++;
+                        } else if (company.equals(gip1) || company.equals(gip2) || company.equals(gip3)) {
+                           cnt8++;
+                        } else if (company.equals(ny1) || company.equals(ny2) || company.equals(ny3)) {
+                           cnt9++;
+                        } else if (company.equals(ddc)) {
+                           cnt10++;
+                        } else if (company.equals(bc1) || company.equals(bc2) || company.equals(bc3) || company.equals(bc4) || company.equals(bc5) || company.equals(bc6)) {
+                           cnt11++;
+                        } else if (company.equals(sn1) || company.equals(sn2) || company.equals(sn3)) {
+                           cnt12++;
+                        } else if (company.equals(sw1) || company.equals(sw2) || company.equals(sw3) || company.equals(sw4) || company.equals(sw5) || company.equals(sw6) || company.equals(sw7)) {
+                           cnt13++;
+                        } else if (company.equals(sh)) {
+                           cnt14++;
+                        } else if (company.equals(as1) || company.equals(as2) || company.equals(as3) || company.equals(as4)) {
+                           cnt15++;
+                        } else if (company.equals(asun)) {
+                           cnt16++;
+                        } else if (company.equals(ay1) || company.equals(ay2)) {
+                           cnt17++;
+                        } else if (company.equals(yj1) || company.equals(yj2)) {
+                           cnt18++;
+                        } else if (company.equals(yp)) {
+                           cnt19++;
+                        } else if (company.equals(yc1) || company.equals(yc2)) {
+                           cnt20++;
+                        } else if (company.equals(os)) {
+                           cnt21++;
+                        } else if (company.equals(yi)) {
+                           cnt22++;
+                        } else if (company.equals(uw1) || company.equals(uw2)) {
+                           cnt23++;
+                        } else if (company.equals(uj1) || company.equals(uj2)) {
+                           cnt24++;
+                        } else if (company.equals(ic1) || company.equals(ic2) || company.equals(ic3)) {
+                           cnt25++;
+                        } else if (company.equals(pj1) || company.equals(pj2) || company.equals(pj3)) {
+                           cnt26++;
+                        } else if (company.equals(pt1) || company.equals(pt2) || company.equals(pt3)) {
+                           cnt27++;
+                        } else if (company.equals(pc1) || company.equals(pc2) || company.equals(pc3)) {
+                           cnt28++;
+                        } else if (company.equals(hn)) {
+                           cnt29++;
+                        } else if (company.equals(hs1) || company.equals(hs2) || company.equals(hs3) || company.equals(hs4)) {
+                           cnt30++;
+                        } else if (currentdate.equals(deadline)) {
+                           if(c == 1) {
+                              double rate1 = Math.round((cnt1 / 65.0) * 100) / 100.0;
+                              double rate2 = Math.round((cnt2 / 147.0) * 100) / 100.0;
+                              double rate3 = Math.round((cnt3 / 43.0) * 100) / 100.0;
+                              double rate4 = Math.round((cnt4 / 65.0) * 100) / 100.0;
+                              double rate5 = Math.round((cnt5 / 147.0) * 100) / 100.0;
+                              double rate6 = Math.round((cnt6 / 43.0) * 100) / 100.0;
+                              double rate7 = Math.round((cnt7 / 65.0) * 100) / 100.0;
+                              double rate8 = Math.round((cnt8 / 147.0) * 100) / 100.0;
+                              double rate9 = Math.round((cnt9 / 43.0) * 100) / 100.0;
+                              double rate10 = Math.round((cnt10 / 65.0) * 100) / 100.0;
+                              double rate11 = Math.round((cnt11 / 65.0) * 100) / 100.0;
+                              double rate12 = Math.round((cnt12 / 147.0) * 100) / 100.0;
+                              double rate13 = Math.round((cnt13 / 43.0) * 100) / 100.0;
+                              double rate14 = Math.round((cnt14 / 65.0) * 100) / 100.0;
+                              double rate15 = Math.round((cnt15 / 147.0) * 100) / 100.0;
+                              double rate16 = Math.round((cnt16 / 43.0) * 100) / 100.0;
+                              double rate17 = Math.round((cnt17 / 65.0) * 100) / 100.0;
+                              double rate18 = Math.round((cnt18 / 147.0) * 100) / 100.0;
+                              double rate19 = Math.round((cnt19 / 43.0) * 100) / 100.0;
+                              double rate20 = Math.round((cnt20 / 65.0) * 100) / 100.0;
+                              double rate21 = Math.round((cnt21 / 65.0) * 100) / 100.0;
+                              double rate22 = Math.round((cnt22 / 147.0) * 100) / 100.0;
+                              double rate23 = Math.round((cnt23 / 43.0) * 100) / 100.0;
+                              double rate24 = Math.round((cnt24 / 65.0) * 100) / 100.0;
+                              double rate25 = Math.round((cnt25 / 147.0) * 100) / 100.0;
+                              double rate26 = Math.round((cnt26 / 43.0) * 100) / 100.0;
+                              double rate27 = Math.round((cnt27 / 65.0) * 100) / 100.0;
+                              double rate28 = Math.round((cnt28 / 147.0) * 100) / 100.0;
+                              double rate29 = Math.round((cnt29 / 43.0) * 100) / 100.0;
+                              double rate30 = Math.round((cnt30 / 65.0) * 100) / 100.0;
+                              
+                              countlist.add(cnt1);
+                                 countlist.add(cnt2);
+                                 countlist.add(cnt3);
+                                 countlist.add(cnt4);
+                                 countlist.add(cnt5);
+                                 countlist.add(cnt6);
+                                 countlist.add(cnt7);
+                                 countlist.add(cnt8);
+                                 countlist.add(cnt9);
+                                 countlist.add(cnt10);
+                                 countlist.add(cnt11);
+                                 countlist.add(cnt12);
+                                 countlist.add(cnt13);
+                                 countlist.add(cnt14);
+                                 countlist.add(cnt15);
+                                 countlist.add(cnt16);
+                                 countlist.add(cnt17);
+                                 countlist.add(cnt18);
+                                 countlist.add(cnt19);
+                                 countlist.add(cnt20);
+                                 countlist.add(cnt21);
+                                 countlist.add(cnt22);
+                                 countlist.add(cnt23);
+                                 countlist.add(cnt24);
+                                 countlist.add(cnt25);
+                                 countlist.add(cnt26);
+                                 countlist.add(cnt27);
+                                 countlist.add(cnt28);
+                                 countlist.add(cnt29);
+                                 countlist.add(cnt30);
+                                  ratelist.add(rate1);
+                                  ratelist.add(rate2);
+                                  ratelist.add(rate3);   
+                                  ratelist.add(rate4);
+                                  ratelist.add(rate5);
+                                  ratelist.add(rate6);      
+                                  ratelist.add(rate7);
+                                  ratelist.add(rate8);
+                                  ratelist.add(rate9);
+                                  ratelist.add(rate10);
+                                  ratelist.add(rate11);
+                                  ratelist.add(rate12);
+                                  ratelist.add(rate13);   
+                                  ratelist.add(rate14);
+                                  ratelist.add(rate15);
+                                  ratelist.add(rate16);      
+                                  ratelist.add(rate17);
+                                  ratelist.add(rate18);
+                                  ratelist.add(rate19);
+                                  ratelist.add(rate20);
+                                  ratelist.add(rate21);
+                                  ratelist.add(rate22);
+                                  ratelist.add(rate23);   
+                                  ratelist.add(rate24);
+                                  ratelist.add(rate25);
+                                  ratelist.add(rate26);      
+                                  ratelist.add(rate27);
+                                  ratelist.add(rate28);
+                                  ratelist.add(rate29);
+                                  ratelist.add(rate30);
+                                  resultList.add(countlist);
+                                  resultList.add(ratelist);
+                                  
+                           }
+                               shouldBreak = true; // 추가된 부분: break를 대신할 변수 설정
+                               break;
+                           }
+                       }
+      
+                       if (shouldBreak) {
+                           break; // 추가된 부분: 내부 for문을 빠져나온 후 while문을 탈출하기 위한 break
+                       }
+                   }
+      
+                   if (shouldBreak) {
+                       break; // 추가된 부분: 외부 while문을 탈출하기 위한 break
+                      
+                   }
+      
+                   nextblock = driver.findElement(By.xpath(
+                           "/html/body/div/div/div[1]/table/tbody/tr/td[3]/table[2]/tbody/tr/td/table/tbody/tr[2]/td"
+                                   + "/table/tbody/tr/td/form/table/tbody/tr[21]/td/table/tbody/tr/td/a[12]"));
+                   nextblock.click();
+                   Thread.sleep(1000);
+               }   
+         }
+      } catch (InterruptedException e) {
+         e.printStackTrace();
+      }
+      return resultList;
+
+   }
+}
