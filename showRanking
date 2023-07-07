@@ -1,0 +1,169 @@
+<%@page import="java.util.List"%>
+<%@ page import="kr.ac.kopo.ctc.kopo39.dao.GyeonggibusDao"%>
+<%@ page import="kr.ac.kopo.ctc.kopo39.dao.GyeonggibusDaoImpl"%>
+<%@ page import="kr.ac.kopo.ctc.kopo39.domain.Gyeonggibus"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Ranking.jsp</title>
+
+<style>
+  body {
+    background: -webkit-linear-gradient(left, #25c481, #25b7c4);
+    background: linear-gradient(to right, #25c481, #25b7c4);
+    font-family: 'Roboto', sans-serif;
+  }
+
+  h1 {
+    font-size: 30px;
+    color: #fff;
+    text-transform: uppercase;
+    font-weight: 300;
+    text-align: center;
+    margin-bottom: 15px;
+  }
+
+  table {
+    width: 100%;
+    table-layout: fixed;
+  }
+
+  .tbl-header {
+    background-color: rgba(255,255,255,0.3);
+  }
+
+  .tbl-content {
+    height: 300px;
+    overflow-x: auto;
+    margin-top: 0px;
+    border: 1px solid rgba(255,255,255,0.3);
+  }
+
+  th {
+    padding: 20px 15px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 12px;
+    color: #fff;
+    text-transform: uppercase;
+  }
+
+  td {
+    padding: 15px;
+    text-align: left;
+    vertical-align: middle;
+    font-weight: 300;
+    font-size: 12px;
+    color: #fff;
+    border-bottom: solid 1px rgba(255,255,255,0.1);
+  }
+
+
+/* demo styles */
+
+@import url(https://fonts.googleapis.com/css?family=Roboto:400,500,300,700);
+body{
+  background: -webkit-linear-gradient(left, #25c481, #25b7c4);
+  background: linear-gradient(to right, #25c481, #25b7c4);
+  font-family: 'Roboto', sans-serif;
+}
+section{
+  margin: 50px;
+}
+
+
+/* follow me template */
+.made-with-love {
+  margin-top: 40px;
+  padding: 10px;
+  clear: left;
+  text-align: center;
+  font-size: 10px;
+  font-family: arial;
+  color: #fff;
+}
+.made-with-love i {
+  font-style: normal;
+  color: #F50057;
+  font-size: 14px;
+  position: relative;
+  top: 2px;
+}
+.made-with-love a {
+  color: #fff;
+  text-decoration: none;
+}
+.made-with-love a:hover {
+  text-decoration: underline;
+}
+
+
+  /* for custom scrollbar for webkit browser */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+  }
+</style>
+
+</head>
+<body>
+
+<h1><b>실시간 경기도 버스 민원 순위표</b></h1>
+
+<div class="tbl-header">
+  <table>
+    <tr>
+      <th>순위</th>
+      <th>시군구</th>
+      <th>노선수</th>
+      <th>불만수</th>
+      <th>불만율</th>
+    </tr>
+  </table>
+</div>
+
+<div class="tbl-content">
+  <table>
+    <%
+    GyeonggibusDao gyeonggibusDao = new GyeonggibusDaoImpl();
+    List<Gyeonggibus> list = gyeonggibusDao.selectAll();
+  
+    for(int i = 0; i < list.size(); i++){
+      Gyeonggibus gyeonggibus = list.get(i);
+    %>
+    <tr>
+      <td><%= (i+1) %></td>
+      <td><%= gyeonggibus.getName() %></td>
+      <td><%= gyeonggibus.getLineNumber() %></td>
+      <td><%= gyeonggibus.getCount() %></td>
+      <td><%= gyeonggibus.getRate() %></td>
+    </tr>
+    <%
+    }
+    %>
+  </table>
+</div>
+
+<script>
+  // 페이지 로드 후 표의 높이를 동적으로 조절합니다.
+  window.addEventListener('load', function() {
+    var tblContent = document.querySelector('.tbl-content');
+    var tblHeaderHeight = document.querySelector('.tbl-header').clientHeight;
+    var maxHeight = window.innerHeight - tblHeaderHeight - 20; // 유동적인 최대 높이 계산
+
+    tblContent.style.maxHeight = maxHeight + 'px';
+  });
+</script>
+
+</body>
+</html>
